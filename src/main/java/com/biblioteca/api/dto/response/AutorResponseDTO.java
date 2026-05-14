@@ -5,6 +5,12 @@ import com.biblioteca.api.model.Autor;
 import java.time.LocalDate;
 import java.util.List;
 
+/**
+ * DTO de saída completo de um autor.
+ *
+ * <p>Inclui id, nome, nacionalidade, data de nascimento e a lista de
+ * livros escritos pelo autor em formato resumido ({@link LivroResumoDTO}).
+ */
 public class AutorResponseDTO {
 
     private Long id;
@@ -15,6 +21,13 @@ public class AutorResponseDTO {
 
     public AutorResponseDTO() {}
 
+    /**
+     * Converte a entidade {@link Autor} no DTO de resposta completo,
+     * mapeando os livros associados para o formato resumido.
+     *
+     * @param a autor de origem
+     * @return DTO pronto para serialização
+     */
     public static AutorResponseDTO fromEntity(Autor a) {
         AutorResponseDTO dto = new AutorResponseDTO();
         dto.id = a.getId();

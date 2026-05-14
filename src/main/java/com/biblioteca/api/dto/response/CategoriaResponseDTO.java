@@ -4,6 +4,12 @@ import com.biblioteca.api.model.Categoria;
 
 import java.util.List;
 
+/**
+ * DTO de saída completo de uma categoria.
+ *
+ * <p>Inclui id, nome, descrição e a lista de livros vinculados em formato
+ * resumido ({@link LivroResumoDTO}).
+ */
 public class CategoriaResponseDTO {
 
     private Long id;
@@ -13,6 +19,13 @@ public class CategoriaResponseDTO {
 
     public CategoriaResponseDTO() {}
 
+    /**
+     * Converte a entidade {@link Categoria} no DTO de resposta completo,
+     * já mapeando os livros para o formato resumido.
+     *
+     * @param c categoria de origem
+     * @return DTO pronto para serialização
+     */
     public static CategoriaResponseDTO fromEntity(Categoria c) {
         CategoriaResponseDTO dto = new CategoriaResponseDTO();
         dto.id = c.getId();

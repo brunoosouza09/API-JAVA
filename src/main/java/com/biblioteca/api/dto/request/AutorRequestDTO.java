@@ -7,6 +7,13 @@ import jakarta.validation.constraints.Size;
 
 import java.time.LocalDate;
 
+/**
+ * DTO de entrada para criação/atualização de um {@link Autor}.
+ *
+ * <p>Encapsula nome, nacionalidade e data de nascimento (opcional, mas
+ * obrigatoriamente no passado quando informada). Mantido separado da
+ * entidade JPA para que o contrato da API não dependa do mapeamento ORM.
+ */
 public class AutorRequestDTO {
 
     @NotBlank(message = "Nome é obrigatório")
@@ -31,10 +38,20 @@ public class AutorRequestDTO {
     public LocalDate getDataNascimento() { return dataNascimento; }
     public void setDataNascimento(LocalDate dataNascimento) { this.dataNascimento = dataNascimento; }
 
+    /**
+     * Converte este DTO em uma nova entidade {@link Autor} (criação).
+     *
+     * @return entidade preenchida com os dados do DTO
+     */
     public Autor toEntity() {
         return new Autor(nome, nacionalidade, dataNascimento);
     }
 
+    /**
+     * Aplica os valores deste DTO em um autor existente (atualização).
+     *
+     * @param autor entidade que será atualizada
+     */
     public void applyTo(Autor autor) {
         autor.setNome(nome);
         autor.setNacionalidade(nacionalidade);

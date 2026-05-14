@@ -7,6 +7,16 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
+/**
+ * Entidade JPA que representa um autor de livros.
+ *
+ * <p>Mapeada para a tabela {@code autor}. Mantém o lado inverso do
+ * relacionamento N:N com {@link Livro} via {@code mappedBy = "autores"};
+ * a tabela de junção {@code livro_autor} é definida em {@link Livro}.
+ *
+ * <p>O campo {@code dataNascimento} é opcional, mas, quando informado,
+ * deve estar no passado (validação feita no DTO de request).
+ */
 @Entity
 @Table(name = "autor")
 public class Autor {
@@ -29,6 +39,13 @@ public class Autor {
 
     public Autor() {}
 
+    /**
+     * Construtor de conveniência usado pelos DTOs de request.
+     *
+     * @param nome nome do autor
+     * @param nacionalidade nacionalidade (ex.: "Brasileira")
+     * @param dataNascimento data de nascimento (opcional)
+     */
     public Autor(String nome, String nacionalidade, LocalDate dataNascimento) {
         this.nome = nome;
         this.nacionalidade = nacionalidade;

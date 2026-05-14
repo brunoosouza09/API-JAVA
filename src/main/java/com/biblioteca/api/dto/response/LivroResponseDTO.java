@@ -5,6 +5,15 @@ import com.biblioteca.api.model.Livro;
 import java.math.BigDecimal;
 import java.util.List;
 
+/**
+ * DTO de saída completo de um livro.
+ *
+ * <p>Carrega os dados do próprio livro (id, título, ISBN, ano, páginas,
+ * preço) e os relacionamentos no formato resumido: a editora
+ * ({@link EditoraResumoDTO}), os autores ({@link AutorResumoDTO}) e as
+ * categorias ({@link CategoriaResumoDTO}). Esse formato evita ciclos de
+ * serialização e mantém o payload enxuto.
+ */
 public class LivroResponseDTO {
 
     private Long id;
@@ -19,6 +28,14 @@ public class LivroResponseDTO {
 
     public LivroResponseDTO() {}
 
+    /**
+     * Converte a entidade {@link Livro} no DTO de resposta completo,
+     * resolvendo a editora e mapeando autores e categorias para os
+     * respectivos formatos resumidos.
+     *
+     * @param l livro de origem
+     * @return DTO pronto para serialização
+     */
     public static LivroResponseDTO fromEntity(Livro l) {
         LivroResponseDTO dto = new LivroResponseDTO();
         dto.id = l.getId();

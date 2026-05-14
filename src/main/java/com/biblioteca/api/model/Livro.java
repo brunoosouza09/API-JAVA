@@ -7,6 +7,23 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
+/**
+ * Entidade JPA central do sistema: representa um livro do acervo.
+ *
+ * <p>Mapeada para a tabela {@code livro}. Possui os seguintes
+ * relacionamentos:
+ * <ul>
+ *   <li>{@code N:1} com {@link Editora} — todo livro pertence a uma única
+ *       editora (FK {@code editora_id}, obrigatória).</li>
+ *   <li>{@code N:N} com {@link Autor} — tabela de junção
+ *       {@code livro_autor}.</li>
+ *   <li>{@code N:N} com {@link Categoria} — tabela de junção
+ *       {@code livro_categoria}.</li>
+ * </ul>
+ *
+ * <p>O campo {@code isbn} é único: não é permitido cadastrar dois livros
+ * com o mesmo ISBN (validado também pelo service).
+ */
 @Entity
 @Table(name = "livro")
 public class Livro {

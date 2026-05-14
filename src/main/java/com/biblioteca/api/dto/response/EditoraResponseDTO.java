@@ -4,6 +4,13 @@ import com.biblioteca.api.model.Editora;
 
 import java.util.List;
 
+/**
+ * DTO de saída completo de uma editora.
+ *
+ * <p>Inclui id, dados cadastrais (nome, cidade, país) e a lista de livros
+ * publicados em formato resumido ({@link LivroResumoDTO}) — preservando o
+ * relacionamento sem causar ciclos na serialização.
+ */
 public class EditoraResponseDTO {
 
     private Long id;
@@ -14,6 +21,13 @@ public class EditoraResponseDTO {
 
     public EditoraResponseDTO() {}
 
+    /**
+     * Converte a entidade {@link Editora} no DTO de resposta completo,
+     * já mapeando a coleção de livros para a forma resumida.
+     *
+     * @param e editora de origem
+     * @return DTO pronto para serialização
+     */
     public static EditoraResponseDTO fromEntity(Editora e) {
         EditoraResponseDTO dto = new EditoraResponseDTO();
         dto.id = e.getId();

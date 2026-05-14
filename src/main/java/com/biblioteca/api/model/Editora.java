@@ -6,6 +6,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * Entidade JPA que representa uma editora de livros no sistema da biblioteca.
+ *
+ * <p>Mapeada para a tabela {@code editora}. Possui o lado inverso (mappedBy)
+ * do relacionamento 1:N com {@link Livro}: uma editora pode publicar vários
+ * livros, mas cada livro pertence a uma única editora.
+ *
+ * <p>O campo {@code nome} é único — não é permitido cadastrar duas editoras
+ * com o mesmo nome (regra validada no service e reforçada pela coluna).
+ */
 @Entity
 @Table(name = "editora")
 public class Editora {
@@ -28,6 +38,14 @@ public class Editora {
 
     public Editora() {}
 
+    /**
+     * Construtor de conveniência usado pelos DTOs de request ao converter
+     * para entidade.
+     *
+     * @param nome nome único da editora
+     * @param cidade cidade-sede
+     * @param pais país-sede
+     */
     public Editora(String nome, String cidade, String pais) {
         this.nome = nome;
         this.cidade = cidade;

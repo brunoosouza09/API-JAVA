@@ -6,6 +6,16 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
+/**
+ * Entidade JPA que representa uma categoria/gênero de livro
+ * (ex.: "Ficção", "Tecnologia").
+ *
+ * <p>Mapeada para a tabela {@code categoria}. Mantém o lado inverso do
+ * relacionamento N:N com {@link Livro} via {@code mappedBy = "categorias"};
+ * a tabela de junção {@code livro_categoria} é definida em {@link Livro}.
+ *
+ * <p>O campo {@code nome} é único (não pode haver categorias duplicadas).
+ */
 @Entity
 @Table(name = "categoria")
 public class Categoria {
@@ -25,6 +35,12 @@ public class Categoria {
 
     public Categoria() {}
 
+    /**
+     * Construtor de conveniência usado pelos DTOs de request.
+     *
+     * @param nome nome único da categoria
+     * @param descricao descrição livre (pode ser nula)
+     */
     public Categoria(String nome, String descricao) {
         this.nome = nome;
         this.descricao = descricao;

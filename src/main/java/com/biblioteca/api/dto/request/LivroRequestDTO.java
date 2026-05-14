@@ -5,6 +5,17 @@ import jakarta.validation.constraints.*;
 import java.math.BigDecimal;
 import java.util.Set;
 
+/**
+ * DTO de entrada para criação/atualização de um livro.
+ *
+ * <p>Em vez das entidades aninhadas, recebe apenas os ids dos
+ * relacionamentos ({@code editoraId}, {@code autoresIds},
+ * {@code categoriasIds}); o service se encarrega de carregar essas
+ * entidades e validar a existência delas no banco.
+ *
+ * <p>Aplica diversas validações de Bean Validation (NotBlank, Pattern para
+ * ISBN, faixa de ano, página positiva, preço &gt; 0, listas não vazias).
+ */
 public class LivroRequestDTO {
 
     @NotBlank(message = "Título é obrigatório")
