@@ -26,6 +26,7 @@ Thumbs.db
 # Docs locais (apenas no PC do dono, fora do GitHub)
 APRESENTACAO.md
 DOCUMENTACAO.md
+PROMPT-SLIDES.md
 
 # JVM crash logs
 hs_err_pid*
