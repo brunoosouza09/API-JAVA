@@ -1,33 +1,26 @@
+// Pacote dos repositórios (acesso a dados via Spring Data JPA).
 package com.biblioteca.api.repository;
 
+// Entidades usadas nos métodos do repositório.
 import com.biblioteca.api.model.Editora;
 import com.biblioteca.api.model.Livro;
+// JpaRepository já oferece CRUD pronto (findAll, findById, save, delete, etc.).
 import org.springframework.data.jpa.repository.JpaRepository;
+// @Repository marca a interface como componente de acesso a dados.
 import org.springframework.stereotype.Repository;
 
-/**
- * Repositório Spring Data JPA para a entidade {@link Livro}.
- *
- * <p>Além dos métodos CRUD herdados de {@link JpaRepository}, expõe
- * consultas derivadas usadas pelos services para garantir regras de
- * negócio (ISBN único e exclusão de editora com livros vinculados).
+/*
+ * Repositório de Livro.
+ * Herda os métodos CRUD do JpaRepository e adiciona alguns métodos
+ * derivados (criados a partir do nome) para checagens de regra de negócio.
  */
 @Repository
 public interface LivroRepository extends JpaRepository<Livro, Long> {
-    /**
-     * Indica se já existe um livro cadastrado com o ISBN informado.
-     *
-     * @param isbn ISBN a verificar (13 dígitos)
-     * @return {@code true} se já existir livro com esse ISBN
-     */
+    // Método derivado: o Spring Data gera o SQL automaticamente baseado no nome.
+    // existsByIsbn -> SELECT 1 FROM livro WHERE isbn = ?
     boolean existsByIsbn(String isbn);
 
-    /**
-     * Indica se há ao menos um livro vinculado à editora informada.
-     * Usado para impedir a exclusão de editoras com livros.
-     *
-     * @param editora editora a consultar
-     * @return {@code true} se houver livros para a editora
-     */
+    // existsByEditora -> SELECT 1 FROM livro WHERE editora_id = ?
+    // Usado para impedir deletar uma editora que ainda tem livros vinculados.
     boolean existsByEditora(Editora editora);
 }

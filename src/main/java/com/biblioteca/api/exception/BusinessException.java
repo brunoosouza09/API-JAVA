@@ -1,20 +1,17 @@
+// Pacote das exceções customizadas.
 package com.biblioteca.api.exception;
 
-/**
- * Exceção usada para sinalizar violações de regras de negócio, como
- * duplicidade de chave única (nome de editora, ISBN) ou tentativas de
- * exclusão bloqueadas por dependências.
+/*
+ * Exceção lançada quando uma regra de negócio é violada,
+ * por exemplo: tentar cadastrar duas editoras com o mesmo nome,
+ * usar um ISBN já existente, ou deletar uma editora que possui livros.
  *
- * <p>É tratada pelo {@link GlobalExceptionHandler}, que a converte em uma
- * resposta HTTP 409 Conflict.
+ * É tratada pelo GlobalExceptionHandler como HTTP 409 Conflict.
  */
 public class BusinessException extends RuntimeException {
-    /**
-     * Cria a exceção com a mensagem que explica a regra violada.
-     *
-     * @param message descrição da regra de negócio violada
-     */
+    // Construtor que recebe a mensagem descrevendo o problema.
     public BusinessException(String message) {
+        // Repassa a mensagem para a superclasse (RuntimeException).
         super(message);
     }
 }

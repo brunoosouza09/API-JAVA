@@ -1,23 +1,21 @@
+// Pacote dos repositórios.
 package com.biblioteca.api.repository;
 
+// Entidade da qual este repositório cuida.
 import com.biblioteca.api.model.Editora;
+// JpaRepository já oferece os métodos CRUD básicos.
 import org.springframework.data.jpa.repository.JpaRepository;
+// @Repository marca a interface como bean de acesso a dados.
 import org.springframework.stereotype.Repository;
 
-/**
- * Repositório Spring Data JPA para a entidade {@link Editora}.
- *
- * <p>Já oferece os métodos CRUD herdados de {@link JpaRepository}
- * (findAll, findById, save, delete, etc.). Aqui adicionamos apenas o
- * derivado de consulta usado pelas validações de duplicidade do service.
+/*
+ * Repositório de Editora.
+ * Estende JpaRepository<Entidade, TipoDoId> para ganhar
+ * findAll, findById, save, delete, count, etc.
  */
 @Repository
 public interface EditoraRepository extends JpaRepository<Editora, Long> {
-    /**
-     * Indica se já existe uma editora com o mesmo nome (case-insensitive).
-     *
-     * @param nome nome a verificar
-     * @return {@code true} se já houver editora com esse nome
-     */
+    // Verifica se já existe editora com este nome (ignorando maiúsculas/minúsculas).
+    // Spring Data gera automaticamente: SELECT 1 FROM editora WHERE LOWER(nome) = LOWER(?)
     boolean existsByNomeIgnoreCase(String nome);
 }

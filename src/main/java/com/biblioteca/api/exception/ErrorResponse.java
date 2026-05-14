@@ -1,55 +1,50 @@
+// Pacote das exceções e dos objetos auxiliares de erro.
 package com.biblioteca.api.exception;
 
+// @JsonInclude controla quais campos vão para o JSON (aqui: só os não-nulos).
 import com.fasterxml.jackson.annotation.JsonInclude;
 
+// LocalDateTime: marca o instante em que o erro ocorreu.
 import java.time.LocalDateTime;
+// List: usado para a lista de erros de campos (validação).
 import java.util.List;
 
-/**
+/*
  * Estrutura padronizada de resposta de erro retornada pela API.
- *
- * <p>Usada pelo {@link GlobalExceptionHandler} para padronizar o JSON de
- * erro (timestamp, status, mensagem, caminho da requisição e, opcionalmente,
- * a lista de erros de validação por campo).
- *
- * <p>A anotação {@code @JsonInclude(NON_NULL)} omite campos nulos do JSON
- * (por exemplo, {@code fieldErrors} só aparece em erros de validação).
+ * Usada pelo GlobalExceptionHandler para que todas as respostas de erro
+ * (404, 409, 400, 500) tenham o mesmo formato JSON.
  */
-@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonInclude(JsonInclude.Include.NON_NULL) // omite os campos nulos no JSON
 public class ErrorResponse {
 
+    // Momento em que o erro foi gerado.
     private LocalDateTime timestamp;
+    // Código HTTP (ex.: 404, 409).
     private int status;
+    // Nome curto do erro (ex.: "Not Found").
     private String error;
+    // Mensagem explicando o erro.
     private String message;
+    // Caminho da requisição que gerou o erro (ex.: /api/livros/999).
     private String path;
+    // Lista de erros de campo (preenchida só em erros de validação).
     private List<FieldErrorItem> fieldErrors;
 
-    /**
-     * Construtor padrão que já inicializa o {@code timestamp} com o
-     * instante atual.
-     */
+    // Construtor padrão: já preenche o timestamp com o instante atual.
     public ErrorResponse() {
         this.timestamp = LocalDateTime.now();
     }
 
-    /**
-     * Construtor de conveniência que preenche os campos principais
-     * da resposta de erro.
-     *
-     * @param status código HTTP (ex.: 404, 409)
-     * @param error nome curto do erro (ex.: "Not Found")
-     * @param message mensagem explicativa
-     * @param path caminho da requisição que originou o erro
-     */
+    // Construtor de conveniência que preenche os principais campos.
     public ErrorResponse(int status, String error, String message, String path) {
-        this();
+        this(); // chama o construtor padrão (preenche timestamp)
         this.status = status;
         this.error = error;
         this.message = message;
         this.path = path;
     }
 
+    // Getters e setters padrão (necessários para a serialização JSON).
     public LocalDateTime getTimestamp() { return timestamp; }
     public void setTimestamp(LocalDateTime timestamp) { this.timestamp = timestamp; }
 
@@ -68,27 +63,27 @@ public class ErrorResponse {
     public List<FieldErrorItem> getFieldErrors() { return fieldErrors; }
     public void setFieldErrors(List<FieldErrorItem> fieldErrors) { this.fieldErrors = fieldErrors; }
 
-    /**
-     * Item que representa um erro de validação em um campo específico do
-     * payload de entrada (usado em respostas 400 Bad Request).
+    /*
+     * Classe interna que representa um único erro de validação de campo.
+     * Aparece, por exemplo, na resposta 400 quando o usuário envia um JSON
+     * com campos inválidos: { "field": "titulo", "message": "Título é obrigatório" }
      */
     public static class FieldErrorItem {
+        // Nome do campo que falhou na validação.
         private String field;
+        // Mensagem da validação (vem da anotação @NotBlank, @Size, etc.).
         private String message;
 
+        // Construtor vazio (exigido pelo Jackson).
         public FieldErrorItem() {}
 
-        /**
-         * Cria um item de erro de campo.
-         *
-         * @param field nome do campo que falhou na validação
-         * @param message mensagem da validação (ex.: "Nome é obrigatório")
-         */
+        // Construtor com os dois campos preenchidos.
         public FieldErrorItem(String field, String message) {
             this.field = field;
             this.message = message;
         }
 
+        // Getters e setters padrão.
         public String getField() { return field; }
         public void setField(String field) { this.field = field; }
 

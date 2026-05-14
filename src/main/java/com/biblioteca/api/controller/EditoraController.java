@@ -1,97 +1,68 @@
+// Pacote dos controllers REST.
 package com.biblioteca.api.controller;
 
+// DTOs de entrada e saída de Editora.
 import com.biblioteca.api.dto.request.EditoraRequestDTO;
 import com.biblioteca.api.dto.response.EditoraResponseDTO;
+// Service que contém as regras de negócio.
 import com.biblioteca.api.service.EditoraService;
+// @Valid dispara o Bean Validation no DTO.
 import jakarta.validation.Valid;
+// ResponseEntity controla status HTTP e cabeçalhos da resposta.
 import org.springframework.http.ResponseEntity;
+// Anotações REST do Spring (@RestController, @RequestMapping, etc.).
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.util.List;
 
-/**
+/*
  * Controller REST do recurso Editora.
- *
- * <p>Expõe os endpoints sob {@code /api/editoras}:
- * <ul>
- *   <li>{@code GET    /api/editoras}       — listar todas</li>
- *   <li>{@code GET    /api/editoras/{id}}  — buscar por id</li>
- *   <li>{@code POST   /api/editoras}       — criar</li>
- *   <li>{@code PUT    /api/editoras/{id}}  — atualizar</li>
- *   <li>{@code DELETE /api/editoras/{id}}  — remover</li>
- * </ul>
- *
- * <p>Não contém regras de negócio: delega toda a lógica ao
- * {@link EditoraService} e apenas adapta a entrada/saída HTTP.
+ * Expõe os endpoints REST em /api/editoras (GET, POST, PUT, DELETE).
  */
 @RestController
 @RequestMapping("/api/editoras")
 public class EditoraController {
 
+    // Service de Editora (injeção via construtor).
     private final EditoraService service;
 
-    /**
-     * Construtor com injeção do service de editoras.
-     */
+    // Construtor com injeção do service.
     public EditoraController(EditoraService service) {
         this.service = service;
     }
 
-    /**
-     * Retorna todas as editoras cadastradas.
-     *
-     * @return 200 OK com a lista de editoras
-     */
+    // GET /api/editoras -> lista todas.
     @GetMapping
     public ResponseEntity<List<EditoraResponseDTO>> listar() {
         return ResponseEntity.ok(service.listar());
     }
 
-    /**
-     * Retorna uma editora pelo id.
-     *
-     * @param id identificador da editora
-     * @return 200 OK com a editora; 404 se não existir
-     */
+    // GET /api/editoras/{id} -> busca pelo id.
     @GetMapping("/{id}")
     public ResponseEntity<EditoraResponseDTO> buscar(@PathVariable Long id) {
         return ResponseEntity.ok(service.buscarPorId(id));
     }
 
-    /**
-     * Cria uma nova editora.
-     *
-     * @param dto dados da editora (validados pelo {@code @Valid})
-     * @return 201 Created com o cabeçalho Location e o corpo criado
-     */
+    // POST /api/editoras -> cria nova editora.
     @PostMapping
     public ResponseEntity<EditoraResponseDTO> criar(@Valid @RequestBody EditoraRequestDTO dto) {
         EditoraResponseDTO criada = service.criar(dto);
+        // 201 Created com o header Location apontando para o novo recurso.
         return ResponseEntity.created(URI.create("/api/editoras/" + criada.getId())).body(criada);
     }
 
-    /**
-     * Atualiza uma editora existente.
-     *
-     * @param id identificador da editora
-     * @param dto novos valores (validados)
-     * @return 200 OK com a editora atualizada
-     */
+    // PUT /api/editoras/{id} -> atualiza editora existente.
     @PutMapping("/{id}")
     public ResponseEntity<EditoraResponseDTO> atualizar(@PathVariable Long id, @Valid @RequestBody EditoraRequestDTO dto) {
         return ResponseEntity.ok(service.atualizar(id, dto));
     }
 
-    /**
-     * Remove uma editora pelo id.
-     *
-     * @param id identificador da editora
-     * @return 204 No Content em caso de sucesso
-     */
+    // DELETE /api/editoras/{id} -> remove a editora.
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletar(@PathVariable Long id) {
         service.deletar(id);
+        // 204 No Content (operação OK sem corpo de resposta).
         return ResponseEntity.noContent().build();
     }
 }

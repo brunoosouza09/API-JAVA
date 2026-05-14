@@ -1,55 +1,64 @@
+// Pacote dos DTOs de saída (response) - o que a API devolve para o cliente.
 package com.biblioteca.api.dto.response;
 
+// Importa a entidade Livro para conseguir converter entidade -> DTO.
 import com.biblioteca.api.model.Livro;
 
+// BigDecimal para representar o preço.
 import java.math.BigDecimal;
-import java.util.List;
 
-/**
- * DTO de saída completo de um livro.
- *
- * <p>Carrega os dados do próprio livro (id, título, ISBN, ano, páginas,
- * preço) e os relacionamentos no formato resumido: a editora
- * ({@link EditoraResumoDTO}), os autores ({@link AutorResumoDTO}) e as
- * categorias ({@link CategoriaResumoDTO}). Esse formato evita ciclos de
- * serialização e mantém o payload enxuto.
+/*
+ * DTO de saída de um Livro.
+ * Carrega os dados do próprio livro + os dados básicos da editora
+ * (id e nome), sem expor diretamente a entidade JPA.
  */
 public class LivroResponseDTO {
 
+    // Identificador do livro.
     private Long id;
+    // Título do livro.
     private String titulo;
+    // ISBN (13 dígitos).
     private String isbn;
+    // Ano de publicação.
     private Integer anoPublicacao;
+    // Quantidade de páginas.
     private Integer numeroPaginas;
+    // Preço de capa.
     private BigDecimal preco;
-    private EditoraResumoDTO editora;
-    private List<AutorResumoDTO> autores;
-    private List<CategoriaResumoDTO> categorias;
+    // Id da editora vinculada (relação N:1).
+    private Long editoraId;
+    // Nome da editora vinculada (carregado para ser exibido junto com o livro).
+    private String editoraNome;
 
+    // Construtor vazio.
     public LivroResponseDTO() {}
 
-    /**
-     * Converte a entidade {@link Livro} no DTO de resposta completo,
-     * resolvendo a editora e mapeando autores e categorias para os
-     * respectivos formatos resumidos.
-     *
-     * @param l livro de origem
-     * @return DTO pronto para serialização
-     */
+    // Método estático de conversão: recebe a entidade e devolve o DTO equivalente.
     public static LivroResponseDTO fromEntity(Livro l) {
+        // Cria um DTO vazio que será preenchido com os dados da entidade.
         LivroResponseDTO dto = new LivroResponseDTO();
+        // Copia o id do livro.
         dto.id = l.getId();
+        // Copia o título.
         dto.titulo = l.getTitulo();
+        // Copia o ISBN.
         dto.isbn = l.getIsbn();
+        // Copia o ano de publicação.
         dto.anoPublicacao = l.getAnoPublicacao();
+        // Copia o número de páginas.
         dto.numeroPaginas = l.getNumeroPaginas();
+        // Copia o preço.
         dto.preco = l.getPreco();
-        dto.editora = EditoraResumoDTO.fromEntity(l.getEditora());
-        dto.autores = l.getAutores().stream().map(AutorResumoDTO::fromEntity).toList();
-        dto.categorias = l.getCategorias().stream().map(CategoriaResumoDTO::fromEntity).toList();
+        // Copia o id da editora (a entidade Editora vem associada via @ManyToOne).
+        dto.editoraId = l.getEditora().getId();
+        // Copia o nome da editora para exibir junto ao livro.
+        dto.editoraNome = l.getEditora().getNome();
+        // Retorna o DTO pronto para ser serializado em JSON.
         return dto;
     }
 
+    // Getters e setters (Spring/Jackson usam para gerar o JSON).
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
@@ -68,12 +77,9 @@ public class LivroResponseDTO {
     public BigDecimal getPreco() { return preco; }
     public void setPreco(BigDecimal preco) { this.preco = preco; }
 
-    public EditoraResumoDTO getEditora() { return editora; }
-    public void setEditora(EditoraResumoDTO editora) { this.editora = editora; }
+    public Long getEditoraId() { return editoraId; }
+    public void setEditoraId(Long editoraId) { this.editoraId = editoraId; }
 
-    public List<AutorResumoDTO> getAutores() { return autores; }
-    public void setAutores(List<AutorResumoDTO> autores) { this.autores = autores; }
-
-    public List<CategoriaResumoDTO> getCategorias() { return categorias; }
-    public void setCategorias(List<CategoriaResumoDTO> categorias) { this.categorias = categorias; }
+    public String getEditoraNome() { return editoraNome; }
+    public void setEditoraNome(String editoraNome) { this.editoraNome = editoraNome; }
 }

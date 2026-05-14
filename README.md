@@ -4,12 +4,13 @@ Web API REST para gerenciamento de uma biblioteca, desenvolvida como trabalho fi
 
 ## Descrição do sistema
 
-Permite cadastrar e gerenciar **Livros**, **Autores**, **Editoras** e **Categorias** com:
-- CRUD completo das 4 entidades
-- Relacionamentos: Livro ↔ Autor (M:N), Livro ↔ Categoria (M:N), Livro → Editora (M:1)
+Permite cadastrar e gerenciar **Livros** e **Editoras** com:
+- CRUD completo das 2 entidades
+- Relacionamento: Livro → Editora (M:1)
 - DTOs separados para entrada e saída
 - Validações com Bean Validation
 - Tratamento global de exceções
+- Interface web em JSP + Bootstrap
 - Documentação automática via Swagger UI
 
 ## Tecnologias utilizadas
@@ -21,13 +22,14 @@ Permite cadastrar e gerenciar **Livros**, **Autores**, **Editoras** e **Categori
 - **MySQL/MariaDB** (compatível)
 - **Jakarta Bean Validation**
 - **springdoc-openapi 2.7.0** (Swagger UI)
+- **JSP + JSTL + Bootstrap 5** (interface web)
 - **Maven**
 
 ## Como executar o projeto
 
 ### Pré-requisitos
 - JDK 17
-- Maven 3.9+
+- Maven 3.9+ (ou o `mvnw` incluso)
 - MySQL 8 ou MariaDB 10.4+ rodando em `localhost:3306` com usuário `root` sem senha (padrão XAMPP)
 
 ### Passos
@@ -45,13 +47,15 @@ CREATE DATABASE biblioteca CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 3. Execute:
 ```bash
-mvn spring-boot:run
+mvnw spring-boot:run
 ```
 
-4. Acesse o Swagger UI:
-- `http://localhost:8080/swagger-ui.html`
+4. Acesse:
+- Interface web: `http://localhost:8080/`
+- Swagger UI: `http://localhost:8080/swagger-ui.html`
+- API REST: `http://localhost:8080/api/livros` e `http://localhost:8080/api/editoras`
 
-A aplicação já vem com dados de exemplo (3 editoras, 5 autores, 6 categorias e 8 livros) populados via `data.sql`.
+A aplicação já vem com dados de exemplo (3 editoras e 8 livros) populados via `data.sql`.
 
 ## Endpoints disponíveis
 
@@ -66,15 +70,6 @@ Base path: `/api`
 | PUT | `/api/livros/{id}` | Atualiza um livro | 200 / 400 / 404 / 409 |
 | DELETE | `/api/livros/{id}` | Remove um livro | 204 / 404 |
 
-### Autores — `/api/autores`
-| Método | Endpoint | Descrição | Status |
-|---|---|---|---|
-| GET | `/api/autores` | Lista todos os autores | 200 |
-| GET | `/api/autores/{id}` | Busca autor por id | 200 / 404 |
-| POST | `/api/autores` | Cria um autor | 201 / 400 |
-| PUT | `/api/autores/{id}` | Atualiza um autor | 200 / 400 / 404 |
-| DELETE | `/api/autores/{id}` | Remove um autor | 204 / 404 |
-
 ### Editoras — `/api/editoras`
 | Método | Endpoint | Descrição | Status |
 |---|---|---|---|
@@ -83,15 +78,6 @@ Base path: `/api`
 | POST | `/api/editoras` | Cria uma editora | 201 / 400 / 409 |
 | PUT | `/api/editoras/{id}` | Atualiza uma editora | 200 / 400 / 404 / 409 |
 | DELETE | `/api/editoras/{id}` | Remove editora (somente se não tiver livros) | 204 / 404 / 409 |
-
-### Categorias — `/api/categorias`
-| Método | Endpoint | Descrição | Status |
-|---|---|---|---|
-| GET | `/api/categorias` | Lista todas as categorias | 200 |
-| GET | `/api/categorias/{id}` | Busca categoria por id | 200 / 404 |
-| POST | `/api/categorias` | Cria uma categoria | 201 / 400 / 409 |
-| PUT | `/api/categorias/{id}` | Atualiza uma categoria | 200 / 400 / 404 / 409 |
-| DELETE | `/api/categorias/{id}` | Remove uma categoria | 204 / 404 |
 
 ## Exemplos de requisições
 
@@ -106,28 +92,7 @@ curl -X POST http://localhost:8080/api/editoras \
   }'
 ```
 
-### Criar autor
-```bash
-curl -X POST http://localhost:8080/api/autores \
-  -H "Content-Type: application/json" \
-  -d '{
-    "nome": "Jorge Amado",
-    "nacionalidade": "Brasileiro",
-    "dataNascimento": "1912-08-10"
-  }'
-```
-
-### Criar categoria
-```bash
-curl -X POST http://localhost:8080/api/categorias \
-  -H "Content-Type: application/json" \
-  -d '{
-    "nome": "Biografia",
-    "descricao": "Livros biográficos"
-  }'
-```
-
-### Criar livro (com autores e categorias por id)
+### Criar livro (referenciando a editora por id)
 ```bash
 curl -X POST http://localhost:8080/api/livros \
   -H "Content-Type: application/json" \
@@ -137,16 +102,14 @@ curl -X POST http://localhost:8080/api/livros \
     "anoPublicacao": 1937,
     "numeroPaginas": 280,
     "preco": 44.90,
-    "editoraId": 1,
-    "autoresIds": [1],
-    "categoriasIds": [1, 2]
+    "editoraId": 1
   }'
 ```
 
 ### Resposta de erro de validação (exemplo)
 ```json
 {
-  "timestamp": "2026-05-13T23:55:23.7287721",
+  "timestamp": "2026-05-14T20:19:23.7287721",
   "status": 400,
   "error": "Bad Request",
   "message": "Erro de validação nos campos enviados",
@@ -161,7 +124,7 @@ curl -X POST http://localhost:8080/api/livros \
 ### Resposta de não encontrado
 ```json
 {
-  "timestamp": "2026-05-13T23:55:23.4804481",
+  "timestamp": "2026-05-14T20:19:23.4804481",
   "status": 404,
   "error": "Not Found",
   "message": "Livro com id 999 não encontrado(a)",
@@ -174,25 +137,25 @@ curl -X POST http://localhost:8080/api/livros \
 ```
 com.biblioteca.api
 ├── controller     -> recebe HTTP, valida com @Valid
-├── service        -> regras de negócio + transações
+│   └── web        -> controllers MVC que renderizam JSP
+├── service        -> regras de negócio
 ├── repository     -> Spring Data JPA
-├── model          -> entidades JPA
+├── model          -> entidades JPA (Livro, Editora)
 ├── dto
 │   ├── request    -> DTOs de entrada com Bean Validation
-│   └── response   -> DTOs de saída (com versões "Resumo" para quebrar ciclos)
+│   └── response   -> DTOs de saída
 ├── exception      -> exceções customizadas + handler global
 └── config         -> configuração do Swagger
 ```
 
 ## Validações implementadas
 
-- **@NotBlank / @NotNull / @NotEmpty** — campos obrigatórios
+- **@NotBlank / @NotNull** — campos obrigatórios
 - **@Size** — tamanho máximo de strings
 - **@Pattern** — formato do ISBN (13 dígitos)
 - **@Min / @Max** — ano de publicação entre 1500 e 2026
 - **@Positive** — número de páginas positivo
 - **@DecimalMin** — preço > 0.01
-- **@Past** — data de nascimento no passado
 
 ## Tratamento de exceções
 

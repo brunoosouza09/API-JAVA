@@ -1,74 +1,59 @@
+// Declara o pacote onde esta classe está localizada (model = entidades JPA).
 package com.biblioteca.api.model;
 
+// Importa todas as anotações do JPA (@Entity, @Table, @Id, @Column, etc.).
 import jakarta.persistence.*;
 
+// BigDecimal é usado para representar valores monetários (preço) com precisão.
 import java.math.BigDecimal;
-import java.util.HashSet;
+// Objects.equals e Objects.hash facilitam implementar equals/hashCode.
 import java.util.Objects;
-import java.util.Set;
 
-/**
- * Entidade JPA central do sistema: representa um livro do acervo.
- *
- * <p>Mapeada para a tabela {@code livro}. Possui os seguintes
- * relacionamentos:
- * <ul>
- *   <li>{@code N:1} com {@link Editora} — todo livro pertence a uma única
- *       editora (FK {@code editora_id}, obrigatória).</li>
- *   <li>{@code N:N} com {@link Autor} — tabela de junção
- *       {@code livro_autor}.</li>
- *   <li>{@code N:N} com {@link Categoria} — tabela de junção
- *       {@code livro_categoria}.</li>
- * </ul>
- *
- * <p>O campo {@code isbn} é único: não é permitido cadastrar dois livros
- * com o mesmo ISBN (validado também pelo service).
- */
+// @Entity marca esta classe como uma entidade JPA, ou seja, ela é mapeada para uma tabela do banco.
 @Entity
+// @Table define o nome da tabela no banco (caso queiramos diferente do nome da classe).
 @Table(name = "livro")
 public class Livro {
 
+    // @Id indica que este campo é a chave primária da tabela.
     @Id
+    // @GeneratedValue faz o banco gerar o id automaticamente (auto-incremento).
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    // @Column configura a coluna: não pode ser nula e tem no máximo 200 caracteres.
     @Column(nullable = false, length = 200)
     private String titulo;
 
+    // ISBN é único: o banco não permite cadastrar dois livros com o mesmo ISBN.
     @Column(nullable = false, unique = true, length = 20)
     private String isbn;
 
+    // name = "ano_publicacao" personaliza o nome da coluna no banco (snake_case).
     @Column(name = "ano_publicacao", nullable = false)
     private Integer anoPublicacao;
 
+    // Mesma ideia: nome da coluna no banco é "numero_paginas".
     @Column(name = "numero_paginas", nullable = false)
     private Integer numeroPaginas;
 
+    // precision = total de dígitos; scale = quantos depois da vírgula. Ex: 99999999.99
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal preco;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    // @ManyToOne: muitos livros podem pertencer a uma mesma editora (relação N:1).
+    // optional = false: a editora é obrigatória.
+    // O fetch fica EAGER (padrão do @ManyToOne): a editora é carregada junto
+    // com o livro — necessário porque os DTOs leem editora.getNome() fora do service.
+    @ManyToOne(optional = false)
+    // @JoinColumn cria a coluna "editora_id" no banco, que é a chave estrangeira.
     @JoinColumn(name = "editora_id", nullable = false)
     private Editora editora;
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-        name = "livro_autor",
-        joinColumns = @JoinColumn(name = "livro_id"),
-        inverseJoinColumns = @JoinColumn(name = "autor_id")
-    )
-    private Set<Autor> autores = new HashSet<>();
-
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-        name = "livro_categoria",
-        joinColumns = @JoinColumn(name = "livro_id"),
-        inverseJoinColumns = @JoinColumn(name = "categoria_id")
-    )
-    private Set<Categoria> categorias = new HashSet<>();
-
+    // Construtor vazio exigido pelo JPA para conseguir instanciar a entidade.
     public Livro() {}
 
+    // Daqui em diante: getters e setters padrão (Spring/JPA usam para ler/escrever os campos).
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
@@ -90,20 +75,19 @@ public class Livro {
     public Editora getEditora() { return editora; }
     public void setEditora(Editora editora) { this.editora = editora; }
 
-    public Set<Autor> getAutores() { return autores; }
-    public void setAutores(Set<Autor> autores) { this.autores = autores; }
-
-    public Set<Categoria> getCategorias() { return categorias; }
-    public void setCategorias(Set<Categoria> categorias) { this.categorias = categorias; }
-
+    // equals/hashCode baseados no id: duas entidades são consideradas iguais se têm o mesmo id.
     @Override
     public boolean equals(Object o) {
+        // Se for o mesmo objeto na memória, já é igual.
         if (this == o) return true;
+        // Se o outro não for um Livro, não pode ser igual.
         if (!(o instanceof Livro)) return false;
+        // Faz o cast e compara apenas o id.
         Livro livro = (Livro) o;
         return Objects.equals(id, livro.id);
     }
 
+    // hashCode também só usa o id, mantendo a coerência com equals.
     @Override
     public int hashCode() { return Objects.hash(id); }
 }

@@ -1,43 +1,42 @@
+// Pacote dos controllers MVC (que renderizam páginas HTML usando JSP).
 package com.biblioteca.api.controller.web;
 
-import com.biblioteca.api.repository.AutorRepository;
-import com.biblioteca.api.repository.CategoriaRepository;
+// Repositórios usados para contar os registros do banco.
 import com.biblioteca.api.repository.EditoraRepository;
 import com.biblioteca.api.repository.LivroRepository;
+// @Controller marca a classe como controller MVC (devolve nomes de view, não JSON).
 import org.springframework.stereotype.Controller;
+// Model carrega os atributos que serão passados para a view (JSP).
 import org.springframework.ui.Model;
+// @GetMapping mapeia uma URL HTTP GET para um método.
 import org.springframework.web.bind.annotation.GetMapping;
 
-/**
- * Controller MVC da página inicial (web/UI), em complemento aos REST controllers
- * que servem JSON. Renderiza um dashboard simples com contagem de cada entidade
+/*
+ * Controller MVC da página inicial.
+ * Mostra um pequeno dashboard com a contagem de livros e editoras
  * e links para as listagens.
  */
 @Controller
 public class HomeController {
 
+    // Repositórios usados só para contar (count()).
     private final LivroRepository livroRepo;
-    private final AutorRepository autorRepo;
     private final EditoraRepository editoraRepo;
-    private final CategoriaRepository categoriaRepo;
 
-    public HomeController(LivroRepository livroRepo, AutorRepository autorRepo,
-                          EditoraRepository editoraRepo, CategoriaRepository categoriaRepo) {
+    // Construtor com injeção dos dois repositórios.
+    public HomeController(LivroRepository livroRepo, EditoraRepository editoraRepo) {
         this.livroRepo = livroRepo;
-        this.autorRepo = autorRepo;
         this.editoraRepo = editoraRepo;
-        this.categoriaRepo = categoriaRepo;
     }
 
-    /**
-     * Página inicial: mostra estatísticas básicas (contagens) e navegação.
-     */
+    // GET / -> renderiza a página inicial.
     @GetMapping("/")
     public String home(Model model) {
+        // Adiciona o total de livros como atributo do model (disponível como ${totalLivros} no JSP).
         model.addAttribute("totalLivros", livroRepo.count());
-        model.addAttribute("totalAutores", autorRepo.count());
+        // Adiciona o total de editoras.
         model.addAttribute("totalEditoras", editoraRepo.count());
-        model.addAttribute("totalCategorias", categoriaRepo.count());
+        // Retorna o nome lógico da view; o Spring resolve para /WEB-INF/jsp/home.jsp.
         return "home";
     }
 }
