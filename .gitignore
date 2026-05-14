@@ -1,0 +1,28 @@
+# Maven
+target/
+*.class
+
+# IDE
+.idea/
+*.iml
+.vscode/
+.settings/
+.project
+.classpath
+.factorypath
+nbproject/
+
+# Logs
+*.log
+startup.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Env
+.env
+
+# JVM crash logs
+hs_err_pid*
+replay_pid*
