@@ -23,6 +23,10 @@ Thumbs.db
 # Env
 .env
 
+# Docs locais (apenas no PC do dono, fora do GitHub)
+APRESENTACAO.md
+DOCUMENTACAO.md
+
 # JVM crash logs
 hs_err_pid*
 replay_pid*
